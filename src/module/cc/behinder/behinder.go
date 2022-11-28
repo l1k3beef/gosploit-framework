@@ -52,7 +52,7 @@ func (cc *Behinder) encrypt(plainData []byte) (cipherData []byte) {
 	cipherData = make([]byte, len(plainPadding))
 	blockMode := cipher.NewCBCEncrypter(block, cc.RandomIV)
 	blockMode.CryptBlocks(cipherData, plainPadding)
-	base64.StdEncoding.Encode(cipherData, cipherData)
+	cipherData = []byte(base64.StdEncoding.EncodeToString(cipherData))
 	return cipherData
 }
 

