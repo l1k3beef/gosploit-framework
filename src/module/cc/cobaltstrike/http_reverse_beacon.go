@@ -2,7 +2,7 @@ package cobaltstrike
 
 import (
 	"encoding/json"
-	"gosploit-framework/src/module/cc/cobaltstrike/command"
+	"gosploit-framework/module/cc/cobaltstrike/command"
 	"io/ioutil"
 	"net/http"
 	"time"
