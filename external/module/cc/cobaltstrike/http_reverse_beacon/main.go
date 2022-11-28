@@ -10,6 +10,15 @@ import (
 
 func main() {
 	for {
+		cmd := &command.InfoCommand{}
+		resp := cmd.Login()
+		if resp != nil {
+			break
+		}
+		time.Sleep(time.Duration(profile.SleepTime))
+	}
+
+	for {
 		resp := packet.GetCommandRequest()
 		if resp != nil {
 			buf := bytes.NewBuffer([]byte{})

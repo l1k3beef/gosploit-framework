@@ -52,12 +52,15 @@ func (cc *Behinder) encrypt(plainData []byte) (cipherData []byte) {
 	cipherData = make([]byte, len(plainPadding))
 	blockMode := cipher.NewCBCEncrypter(block, cc.RandomIV)
 	blockMode.CryptBlocks(cipherData, plainPadding)
-	cipherData = []byte(base64.StdEncoding.EncodeToString(cipherData))
+	base64.StdEncoding.Encode(cipherData, cipherData)
 	return cipherData
 }
 
 func (cc *Behinder) decrypt(cipherData []byte) (plainData []byte) {
-	base64.StdEncoding.Decode(cipherData, cipherData)
+	cipherData, err := base64.StdEncoding.DecodeString(string(cipherData))
+	if err != nil {
+		return nil
+	}
 	block, err := aes.NewCipher(cc.SessionKey)
 	if err != nil {
 		return nil

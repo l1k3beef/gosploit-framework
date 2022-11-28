@@ -7,12 +7,12 @@ type Command struct {
 }
 
 type ShellCommand struct {
-	Command
+	*Command
 	Argv []string
 	Envp []string
 }
 
 type SleepCommand struct {
-	Command
+	*Command
 	SleepTime time.Duration
 }

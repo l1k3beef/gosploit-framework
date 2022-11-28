@@ -3,7 +3,7 @@ package profile
 import "time"
 
 var (
-	SleepTime  = 1 * time.Millisecond
+	SleepTime  = 200 * time.Millisecond
 	SessionKey = []byte{}
 	RandomIV   = []byte{}
 	SessionID  string
@@ -12,6 +12,6 @@ var (
 
 	GetUrl        = ""
 	PostUrl       = ""
-	SessionFormat = "PHPSession=%v"
+	SessionFormat = "JSESSIONID=%v"
 	UserAgent     = ""
 )

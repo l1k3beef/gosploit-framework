@@ -50,7 +50,10 @@ func (cc *Beacon) encrypt(plainData []byte) (cipherData []byte) {
 }
 
 func (cc *Beacon) decrypt(cipherData []byte) (plainData []byte) {
-	base64.StdEncoding.Decode(cipherData, cipherData)
+	cipherData, err := base64.StdEncoding.DecodeString(string(cipherData))
+	if err != nil {
+		return nil
+	}
 	block, err := aes.NewCipher(cc.SessionKey)
 	if err != nil {
 		return nil

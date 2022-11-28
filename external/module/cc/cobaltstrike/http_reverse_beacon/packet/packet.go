@@ -62,7 +62,10 @@ func HttpPost(url string, data []byte) (resp *req.Resp) {
 	headers := req.Header{
 		"User-Agent": profile.UserAgent,
 		"Accept":     "*/*",
-		"Cookie":     fmt.Sprintf(profile.SessionFormat, profile.SessionID),
+	}
+
+	if profile.SessionID != "" {
+		headers["Coookie"] = fmt.Sprintf(profile.SessionFormat, profile.SessionID)
 	}
 	if profile.ProxyUrl != "" {
 		httpReqeust.SetProxyUrl(profile.ProxyUrl)
@@ -82,7 +85,10 @@ func HttpGet(url string, data []byte) (resp *req.Resp) {
 	headers := req.Header{
 		"User-Agent": profile.UserAgent,
 		"Accept":     "*/*",
-		"Cookie":     fmt.Sprintf(profile.SessionFormat, profile.SessionID),
+	}
+
+	if profile.SessionID != "" {
+		headers["Coookie"] = fmt.Sprintf(profile.SessionFormat, profile.SessionID)
 	}
 	if profile.ProxyUrl != "" {
 		httpReqeust.SetProxyUrl(profile.ProxyUrl)

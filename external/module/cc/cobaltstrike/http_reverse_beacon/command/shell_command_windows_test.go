@@ -14,7 +14,7 @@ func TestShellCommand(t *testing.T) {
 }
 
 func initTest(t *testing.T) {
-	profile.PostUrl = "http://localhost:80/test"
+	profile.PostUrl = "http://localhost:80/post"
 	profile.ProxyUrl = "http://localhost:8080"
 	profile.SessionKey = []byte("1234567812345678")
 	profile.RandomIV = []byte("1234567812345678")
